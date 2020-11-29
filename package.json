@@ -2,11 +2,13 @@
   "name": "raw-socket",
   "version": "1.7.0",
   "description": "Raw sockets for Node.js.",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "./dist/index.d.ts",
   "directories": {
     "example": "example"
   },
   "dependencies": {
+    "@types/node": "^14.14.10",
     "nan": "2.14.*"
   },
   "contributors": [
@@ -39,5 +41,12 @@
     "sockets"
   ],
   "author": "NoSpaceships Ltd <hello@nospaceships.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build"
+  },
+  "devDependencies": {
+    "typescript": "^4.1.2"
+  }
 }
