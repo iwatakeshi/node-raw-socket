@@ -69,6 +69,11 @@ interface Requests {
   afterCallback: (error?: Error | null, bytes?: number | undefined) => void;
 }
 
+for (const key in EventEmitter.prototype) {
+  // @ts-ignore
+  raw.SocketWrap.prototype[key] = EventEmitter.prototype[key];
+}
+
 export class Socket extends EventEmitter {
   private requests: Requests[] = [];
   private buffer: Buffer;
@@ -78,6 +83,7 @@ export class Socket extends EventEmitter {
   constructor(options: SocketOptions = {}) {
     super();
     this.buffer = Buffer.alloc(options?.bufferSize ?? 4096);
+
     this.wrapper = new raw.SocketWrap(
       options?.protocol ?? 0,
       options?.ipVersion ?? IPVersion.IPv4
