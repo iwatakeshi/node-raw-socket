@@ -8,7 +8,6 @@
     "example": "example"
   },
   "dependencies": {
-    "cpy-cli": "^3.1.1",
     "nan": "2.14.2"
   },
   "contributors": [
@@ -43,7 +42,7 @@
   "author": "NoSpaceships Ltd <hello@nospaceships.com>",
   "license": "MIT",
   "scripts": {
-    "build": "tsc && cpy build dist/build",
+    "build": "tsc",
     "prepare": "npm run build"
   },
   "devDependencies": {
