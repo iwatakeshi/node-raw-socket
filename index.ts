@@ -1,6 +1,7 @@
 import { EventEmitter } from "events";
 import net from "net";
-const raw = require("./build/Release/raw.node");
+// The output will be relative to dist/
+const raw = require("../build/Release/raw.node");
 
 export enum IPVersion {
   IPv4 = 1,
