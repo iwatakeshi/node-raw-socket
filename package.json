@@ -43,7 +43,7 @@
   "author": "NoSpaceships Ltd <hello@nospaceships.com>",
   "license": "MIT",
   "scripts": {
-    "build": "tsc && cpy build dist",
+    "build": "tsc && cpy build dist/build",
     "prepare": "npm run build"
   },
   "devDependencies": {
