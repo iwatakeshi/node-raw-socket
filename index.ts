@@ -1,7 +1,14 @@
 import { EventEmitter } from "events";
+import TypedEmitter from "typed-emitter";
 import net from "net";
 // The output will be relative to dist/
-const raw = require("../build/Release/raw.node");
+const raw = require("./build/Release/raw.node");
+
+interface SocketEvents {
+  close: () => void;
+  error: (error: Error) => void;
+  message: (buffer: Buffer, address: string) => void;
+}
 
 export enum IPVersion {
   IPv4 = 1,
@@ -75,7 +82,7 @@ for (const key in EventEmitter.prototype) {
   raw.SocketWrap.prototype[key] = EventEmitter.prototype[key];
 }
 
-export class Socket extends EventEmitter {
+export class Socket extends (EventEmitter as new () => TypedEmitter<SocketEvents>) {
   private requests: Requests[] = [];
   private buffer: Buffer;
   private recvPaused: boolean = false;
@@ -247,20 +254,16 @@ export class Socket extends EventEmitter {
   /**
    * Sets a socket option using the operating systems `setsockopt()` function.
    */
-  setOption({
-    level,
-    option,
-    buffer,
-    length,
-  }: {
-    level: keyof SocketLevel;
-    option: keyof SocketOption;
-    buffer?: Buffer;
-    length: number;
-  }) {
-    if (buffer) {
-      this.wrapper.setOption(level, option, buffer, length);
-    } else this.wrapper.setOption(level, option, buffer);
+  setOption(
+    level: SocketLevel | number,
+    option: SocketOption | number,
+    value: number | { buffer: Buffer | number; length: number }
+  ) {
+    if (typeof value === "number") {
+      this.wrapper.setOption(level, option, value);
+    } else {
+      this.wrapper.setOption(level, option, value.buffer, value.length);
+    }
 
     return this;
   }
@@ -268,17 +271,12 @@ export class Socket extends EventEmitter {
   /**
    * Returns the number of bytes written into the buffer
    */
-  getOption({
-    level,
-    option,
-    buffer,
-    length,
-  }: {
-    level: keyof SocketLevel;
-    option: keyof SocketOption;
-    buffer?: Buffer;
-    length: number;
-  }): number {
+  getOption(
+    level: SocketLevel | number,
+    option: SocketOption | number,
+    buffer: Buffer,
+    length: number
+  ): number {
     return this.wrapper.getOption(level, option, buffer, length);
   }
 }
@@ -286,10 +284,12 @@ export class Socket extends EventEmitter {
 /**
  * Creates and returns a 16 bit one's complement of the one's complement sum for all the data specified in one or more Node.js `Buffer` objects.
  */
-exports.createChecksum = function () {
-  var sum = 0;
-  for (var i = 0; i < arguments.length; i++) {
-    var object = arguments[i];
+export function createChecksum(
+  ...args: (Buffer | { buffer: Buffer; offset: number; length: number })[]
+) {
+  let sum = 0;
+  for (let i = 0; i < arguments.length; i++) {
+    const object = arguments[i];
     if (object instanceof Buffer) {
       sum = raw.createChecksum(sum, object, 0, object.length);
     } else {
@@ -302,7 +302,7 @@ exports.createChecksum = function () {
     }
   }
   return sum;
-};
+}
 
 /**
  * The `writeChecksum()` function writes a checksum created by the `raw.createChecksum()` function to the Node.js `Buffer` object `buffer` at `offsets` offset and `offset + 1`
@@ -312,8 +312,8 @@ exports.createChecksum = function () {
  */
 export function writeChecksum(
   buffer: Buffer,
-  checksum: number,
-  offset: number
+  offset: number,
+  checksum: number
 ) {
   buffer.writeUInt8((checksum & 0xff00) >> 8, offset);
   buffer.writeUInt8(checksum & 0xff, offset + 1);
