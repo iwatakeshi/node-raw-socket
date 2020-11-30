@@ -1,13 +1,19 @@
-import { createSocket } from "../index";
+import {
+  createSocket,
+  IPVersion,
+  Protocol,
+  SocketLevel,
+  SocketOption,
+} from "../index";
 
 const options = {
-  addressFamily: raw.AddressFamily.IPv6,
-  protocol: raw.Protocol.ICMPv6,
+  addressFamily: IPVersion.IPv6,
+  protocol: Protocol.ICMPv6,
 };
 
 const socket = createSocket(options);
 
-socket.setOption(raw.SocketLevel.IPPROTO_IP, raw.SocketOption.IP_HDRINCL, {
+socket.setOption(SocketLevel.IPPROTO_IP, SocketOption.IP_HDRINCL, {
   buffer: Buffer.from([0x00, 0x00, 0x00, 0x01]),
   length: 4,
 });
@@ -112,7 +118,7 @@ const buffer = Buffer.from([
 ]);
 
 function ping6() {
-  target = "fe80::713b:ee11:cb44:2898";
+  let target = "fe80::713b:ee11:cb44:2898";
   socket.send(buffer, 0, buffer.length, target, {
     after(error, bytes) {
       if (error) {
