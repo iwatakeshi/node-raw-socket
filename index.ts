@@ -148,11 +148,6 @@ export class Socket extends (EventEmitter as new () => TypedEmitter<SocketEvents
     this.emit("close");
   }
 
-  private close() {
-    this.wrapper.close();
-    return this;
-  }
-
   /**
    * Sends data to a remote host
    * @param buffer The `buffer` parameter is a Node.js `Buffer` object containing the data to be sent
@@ -213,6 +208,11 @@ export class Socket extends (EventEmitter as new () => TypedEmitter<SocketEvents
 
     if (this.sendPaused) this.resumeSend();
 
+    return this;
+  }
+
+  close() {
+    this.wrapper.close();
     return this;
   }
 
