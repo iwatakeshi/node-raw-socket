@@ -4,3 +4,6 @@ node_modules
 npm-debug.log
 package-lock.json
 dist
+*.js
+example/*.js
+example/*.d.ts
