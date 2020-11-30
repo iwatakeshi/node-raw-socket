@@ -2,8 +2,8 @@
   "name": "raw-socket",
   "version": "1.7.0",
   "description": "Raw sockets for Node.js.",
-  "main": "dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "index.js",
+  "types": "index.d.ts",
   "directories": {
     "example": "example"
   },
